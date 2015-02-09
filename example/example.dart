@@ -9,8 +9,8 @@ void main() {
     print("===========================");
     print("Found $bits-bits versions:");
     print("---------------------------");
-    for (var version in versions) {
-      print("Microsoft Visual Studio VC $version");
+    for (var version in versions.keys) {
+      print("Microsoft Visual Studio C++ Compiler $version: ${versions[version]}");
     }
   }
 
@@ -19,9 +19,9 @@ void main() {
     var versions = msvc.versions;
     print("===========================");
     print("Environment varibales for $bits-bits versions:");
-    for (var version in versions) {
+    for (var version in versions.keys) {
       print("===========================");
-      print("Microsoft Visual Studio VC $version");
+      print("Microsoft Visual Studio C++ Compiler $version");
       print("---------------------------");
       var env = msvc.getEnvironment(version);
       var map = _difference(Platform.environment, env);

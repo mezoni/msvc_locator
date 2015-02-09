@@ -3,21 +3,25 @@ part of msvc_locator;
 class MsvcLocator {
   Map<String, String> _scripts;
 
+  Map<String, String> _versions;
+
   MsvcLocator(int bits) {
     if (bits != 32 && bits != 64) {
       throw new ArgumentError('bits: $bits');
     }
 
-    _scripts = _getEnvironmentScripts(bits);
+    _versions = <String, String>{};
+    _scripts = <String, String>{};
+    _getEnvironmentScripts(bits);
+    _versions = new UnmodifiableMapView<String, String>(_versions);
     _scripts = new UnmodifiableMapView<String, String>(_scripts);
   }
 
   Map<String, String> get scripts => _scripts;
 
-  List<String> get versions => _scripts.keys.toList();
+  Map<String, String> get versions => _versions;
 
-  Map<String, String> _getEnvironmentScripts(int bits) {
-    var result = <String, String>{};
+  void _getEnvironmentScripts(int bits) {
     var key = r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio';
     if (SysInfo.kernelBitness == 64) {
       key = r'HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio';
@@ -25,12 +29,12 @@ class MsvcLocator {
 
     var reg = _WindowsRegistry.queryAllKeys(key);
     if (reg == null) {
-      return result;
+      return;
     }
 
     var regVC7 = reg[r'SxS\VC7'];
     if (regVC7 == null) {
-      return result;
+      return;
     }
 
     var versions = <String, String>{};
@@ -41,7 +45,7 @@ class MsvcLocator {
     }
 
     if (versions.length == 0) {
-      return result;
+      return;
     }
 
     var scriptName = 'vcvars32.bat';
@@ -66,14 +70,13 @@ class MsvcLocator {
       try {
         var file = new File('${vc7Path}bin\\$scriptName');
         if (file.existsSync()) {
-          result[version] = file.path;
+          _scripts[version] = file.path;
+          _versions[version] = vc7Path;
         }
 
       } catch (s) {
       }
     }
-
-    return result;
   }
 
   Map<String, String> getEnvironment(String version) {
