@@ -1,0 +1,9 @@
+name: msvc_locator
+version: 0.0.2
+author: Andrew Mezoni <andrew.mezoni@gmail.com>
+description: Helps locate installed Microsoft Visual Studio C++ compilers. Retrieves the environment variables for the specified version of the Microsoft C++ compiler.
+homepage: https://github.com/mezoni/msvc_locator
+dependencies:
+  system_info: any
+dev_dependencies:
+  unittest: any
